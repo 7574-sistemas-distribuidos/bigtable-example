@@ -91,10 +91,10 @@ def main(project_id, instance_id, table_id, words_filepath):
     print("Creating column family with Max Version GC rule...")
     # Create a column family with GC policy : most recent N versions
     # Define the GC policy to retain only the most recent 2 versions
-    max_versions_rule = column_family.MaxVersionsGCRule(2)
     column_family_id = "word_attributes"
-    column_families = {column_family_id: max_versions_rule}
     if not table.exists():
+        max_versions_rule = column_family.MaxVersionsGCRule(2)
+        column_families = {column_family_id: max_versions_rule}
         table.create(column_families=column_families)
     else:
         print("Table {} already exists.".format(table_id))
@@ -103,7 +103,7 @@ def main(project_id, instance_id, table_id, words_filepath):
 
     # Create a filter to only retrieve the most recent version of the cell
     # for each column accross entire row.
-    row_filter = row_filters.CellsColumnLimitFilter(1)
+    row_filter = row_filters.CellsColumnLimitFilter(10000)
 
     print("Getting a single greeting by row key.")
     key = "internet".encode()
@@ -119,7 +119,7 @@ def main(project_id, instance_id, table_id, words_filepath):
         _print_row(row, column_family_id)
 
     print("Deleting the {} table.".format(table_id))
-    table.delete()
+    #table.delete()
 
 
 if __name__ == "__main__":
